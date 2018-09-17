@@ -11,7 +11,9 @@ import collections
 import sys
 
 import preprocess as pre 
-from perceptron import Perceptron as perc
+from adaline import Adaline
+from perceptron import Perceptron
+from sgd import SGD
 
 def file_handler(file_name):
     '''
@@ -76,18 +78,34 @@ def main():
     if algorithm == 'perceptron' and file_name == 'iris.csv':
         #preprocess
         row_vectors = pre.create_row_vectors(raw_data, 0, 100, [0,2])
-        col_vectors = pre.create_col_vectors(raw_data, 0, 100, [4])
+        col_vectors = pre.create_col_vectors(raw_data, 0, 100, 4)
         col_vectors = pre.mod_col_vals(col_vectors,'Iris-setosa', 1, -1)
         #learn predict
-        model = perc(eta, itrs)
+        model = Perceptron(eta, itrs)
         model.learn(row_vectors, col_vectors)
-
+    elif algorithm == 'adaline' and file_name == 'iris.csv':
+        #preprocess
+        row_vectors = pre.create_row_vectors(raw_data, 0, 100, [0, 2])
+        std_row_vectors = pre.std_rows(row_vectors,[0,1])
+        col_vectors = pre.create_col_vectors(raw_data, 0, 100, 4)
+        col_vectors = pre.mod_col_vals(col_vectors, 'Iris-setosa', 1, -1)
+        #learn predict
+        model2 = Adaline(eta, itrs, )
+        model2.learn(std_row_vectors, col_vectors)
+        for cost in enumerate(model2.costs, 0):
+            print(cost)
+    elif algorithm == 'sgd' and file_name == 'iris.csv':
+        row_vectors = pre.create_row_vectors(raw_data, 0, 100, [0, 2])
+        std_row_vectors = pre.std_rows(row_vectors, [0, 1])
+        col_vectors = pre.create_col_vectors(raw_data, 0, 100, 4)
+        col_vectors = pre.mod_col_vals(col_vectors, 'Iris-setosa', 1, -1)
+        #learn predict
+        model3 = SGD(eta, itrs)
+        model3.learn(std_row_vectors, col_vectors)
+        for cost in enumerate(model3.avg_costs, 0):
+            print(cost)
 
     #if algorithm == 'percptron':
-
-
-
-
 
 if __name__ == '__main__':
     main()

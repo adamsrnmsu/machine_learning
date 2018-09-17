@@ -23,7 +23,7 @@ def construct_pandas_frame(html, attributes):
     return df
 
 
-class Adaline(object):
+class SGD(object):
     def __init__(self, eta, iters):
         '''
         simple constructor function
@@ -87,31 +87,3 @@ class Adaline(object):
         prediction = np.where(input >= 0.0, 1, -1)
         return prediction
 
-
-def main():
-    html = 'https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data'
-    attributes = ['sepal_length', 'sepal_width',
-                  'petal_length', 'petal_width', 'class']
-    df = construct_pandas_frame(html, attributes)
-    x = df.iloc[0:100, [0, 2]].values  # row vector
-    x_std = np.copy(x)
-    #standardize the input features
-    x_std[:, 0] = (x[:, 0] - x[:, 0].mean()) / x[:, 0].std()
-    x_std[:, 1] = (x[:, 0] - x[:, 1].mean()) / x[:, 1].std()
-    # output vectors of size 1, equal to target classification
-    y = df.iloc[0:100, 4].values
-    y = np.where(y == 'Iris-setosa', 1, -1)
-
-    # This is just a quick check we have 50 setosa, 50 not setosa
-    verify_count = collections.Counter(y)
-    print(f"should be 50 ==1 and 50 == -1: {verify_count}")
-
-    #create / train perceptron
-    model = Adaline(eta=.1, iters = 5)
-    model.learn(x, y)
-    for avg_cost in model.avg_costs:
-        print(avg_cost)
-
-
-if __name__ == '__main__':
-    main()

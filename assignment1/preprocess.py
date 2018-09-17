@@ -43,20 +43,16 @@ def mod_col_vals(col_vectors, targ_val, if_true, if_false):
     col_vectors = np.where(col_vectors == targ_val, if_true, if_false)
     return col_vectors
 
-def main():
-    x = df.iloc[0:100, [0, 2]].values  # row vector
-    # output vectors of size 1, equal to target classification
-    y = df.iloc[0:100, 4].values
-    y = np.where(y == 'Iris-setosa', 1, -1)
 
-    # This is just a quick check we have 50 setosa, 50 not setosa
-    verify_count = collections.Counter(y)
-    print(f"should be 50 ==1 and 50 == -1: {verify_count}")
-
-    #create / train perceptron
-    model = Perceptron(eta=.1, iters=10)
-    model.learn(x, y)
-
-
-if __name__ == '__main__':
-    main()
+def std_rows(row_vecs, col_list):
+    '''
+    takes row vectors and standardizes
+    :param: row_vecs - list of frow vectors created by 
+            create_row_vectors
+    :param: col_list - list of ints representign columns to be standardized
+    :returns: standardized rows
+    '''
+    std_row_vecs = np.copy(row_vecs)
+    for col in col_list:
+        std_row_vecs[:, col] = (std_row_vecs[:, col] - std_row_vecs[:, col].mean()) / std_row_vecs[:, col].std()
+    return std_row_vecs
