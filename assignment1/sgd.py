@@ -10,19 +10,6 @@ import numpy as np
 import collections
 
 
-def construct_pandas_frame(html, attributes):
-    '''
-    Creats a pandas dataframe from a csv like data format from a csv
-    Also assumes that the header is not in the csv representation nor the index name
-    :param: html - string for the location of the csv like data on website
-    :param: attributes - list of strings of the given data set in order
-    :returns: pandas dataframe
-    '''
-    df = pd.read_csv(html, header=None)
-    df.columns = attributes
-    return df
-
-
 class SGD(object):
     def __init__(self, eta, iters):
         '''

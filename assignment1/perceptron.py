@@ -8,18 +8,7 @@ import pandas as pd
 import numpy as np
 import collections
 
-
-def construct_pandas_frame(html, attributes):
-    '''
-    Creats a pandas dataframe from a csv like data format from a csv
-    Also assumes that the header is not in the csv representation nor the index name
-    :param: html - string for the location of the csv like data on website
-    :param: attributes - list of strings of the given data set in order
-    :returns: pandas dataframe
-    '''
-    df = pd.read_csv(html, header=None)
-    df.columns = attributes
-    return df
+import preprocess as pre
 
 
 class Perceptron(object):
@@ -39,14 +28,14 @@ class Perceptron(object):
         '''
         #Generate random number for the length of all rows
         generator = np.random.RandomState(1)
-
+        self.errors_list = []
+        self.weights_list = []
         #Because the output_vector and row_vector sizes are equal we just pick one to find size
         self.weights = generator.normal(loc=0.0, scale=.01, size=len(row_vectors[0])+1)
         for iter in range(self.iters):
             error = 0  # initializes error counter to be zero of iter
             i = 0
             for row_vector, output_vector in zip(row_vectors, output_vectors):
-
                 #create a prediction using the weights and given row_vector
                 prediction = self.predict(row_vector)
                 error = error + np.where(output_vector == prediction, 0, 1)
@@ -55,8 +44,9 @@ class Perceptron(object):
                 i = i+1
                 #if i>=51:
                 #    break
-            print(f"error: {int(error)}, weights {self.weights}")
-
+            self.errors_list.append(error)
+            self.weights_list.append(self.weights)
+        return self
 
     def predict(self, row_vector):
         '''

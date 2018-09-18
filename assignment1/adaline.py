@@ -40,7 +40,9 @@ class Adaline(object):
         generator = np.random.RandomState(1)
         #Because the output_vector and row_vector sizes are equal we just pick one to find size
         self.weights = generator.normal(loc=0.0, scale=.01, size=len(row_vectors[0])+1)
+        self.weights_list = []
         self.costs = []
+        self.errors_list =[]
         for iter in range(self.iters):
             #create a prediction using the weights and given row_vector
             self.output = np.dot(row_vectors, self.weights[1:]) + self.weights[0]
@@ -48,6 +50,10 @@ class Adaline(object):
             self.weights[1:] = self.weights[1:] + (self.eta * row_vectors.T.dot(self.errors))
             self.weights[0] = self.weights[0] + (self.eta * self.errors.sum())
             self.costs.append((self.errors ** 2).sum() / 2.0)
+            for row_vector, output_vector in zip(row_vectors, output_vectors):
+                prediction = self.predict(row_vector)
+                error = error + np.where(output_vector == prediction, 0, 1)
+            self.errors_list.append(error)
         return self
 
 

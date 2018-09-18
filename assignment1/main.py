@@ -9,6 +9,7 @@ import pandas as pd
 import numpy as np
 import collections
 import sys
+import matplotlib.pyplot as plt
 
 import preprocess as pre 
 from adaline import Adaline
@@ -77,27 +78,51 @@ def main():
 
     if algorithm == 'perceptron' and file_name == 'iris.csv':
         #preprocess
-        row_vectors = pre.create_row_vectors(raw_data, 0, 100, [0,2])
-        col_vectors = pre.create_col_vectors(raw_data, 0, 100, 4)
+        row_vectors = pre.create_row_vectors(raw_data, 0, 150, [0,2])
+        col_vectors = pre.create_col_vectors(raw_data, 0, 150, 4)
         col_vectors = pre.mod_col_vals(col_vectors,'Iris-setosa', 1, -1)
         #learn predict
         model = Perceptron(eta, itrs)
         model.learn(row_vectors, col_vectors)
+        #report
+        x_axis = []
+        for error in enumerate(model.errors_list,0):
+            accuracy = pre.accuracy(len(row_vectors) - error[1], len(row_vectors))
+            x_axis.append(error[0])
+            print("iter: " + str(error[0]) + " error: " + str(error[1]) + " accuracy: " + str(accuracy))
+        # #plot
+        # plt.plot(x_axis, model.errors_list)
+        # plt.ylabel("Errors")
+        # plt.xlabel("Iterations")
+        # plt.xlim([0, itrs+1])
+        # plt.ylim([0, max(model.errors_list)+1])
+        # plt.show()
     elif algorithm == 'adaline' and file_name == 'iris.csv':
         #preprocess
-        row_vectors = pre.create_row_vectors(raw_data, 0, 100, [0, 2])
+        row_vectors = pre.create_row_vectors(raw_data, 0, 150, [0, 2])
         std_row_vectors = pre.std_rows(row_vectors,[0,1])
-        col_vectors = pre.create_col_vectors(raw_data, 0, 100, 4)
+        col_vectors = pre.create_col_vectors(raw_data, 0, 150, 4)
         col_vectors = pre.mod_col_vals(col_vectors, 'Iris-setosa', 1, -1)
         #learn predict
         model2 = Adaline(eta, itrs, )
         model2.learn(std_row_vectors, col_vectors)
+        #report
+        x_axis = []
         for cost in enumerate(model2.costs, 0):
-            print(cost)
+            accuracy = pre.accuracy(len(row_vectors) - model2.errors_list[cost[0]], len(row_vectors))
+            print("iter: " + str(cost[0]) + " cost: " + str(cost[1]) + " accuracy: " + str(accuracy))
+            x_axis.append(cost[0])
+        #plot
+        plt.plot(x_axis, model2.costs)
+        plt.ylabel("Costs")
+        plt.xlabel("Iterations")
+        plt.xlim([0, itrs+1])
+        plt.ylim([0, max(model2.costs)+1])
+        plt.show()
     elif algorithm == 'sgd' and file_name == 'iris.csv':
-        row_vectors = pre.create_row_vectors(raw_data, 0, 100, [0, 2])
+        row_vectors = pre.create_row_vectors(raw_data, 0, 150, [0, 2])
         std_row_vectors = pre.std_rows(row_vectors, [0, 1])
-        col_vectors = pre.create_col_vectors(raw_data, 0, 100, 4)
+        col_vectors = pre.create_col_vectors(raw_data, 0, 150, 4)
         col_vectors = pre.mod_col_vals(col_vectors, 'Iris-setosa', 1, -1)
         #learn predict
         model3 = SGD(eta, itrs)

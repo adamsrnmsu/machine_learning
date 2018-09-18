@@ -43,6 +43,10 @@ def mod_col_vals(col_vectors, targ_val, if_true, if_false):
     col_vectors = np.where(col_vectors == targ_val, if_true, if_false)
     return col_vectors
 
+def accuracy(error, vec_len):
+    return (error / vec_len) * 100
+
+
 
 def std_rows(row_vecs, col_list):
     '''
