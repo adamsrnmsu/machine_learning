@@ -74,6 +74,20 @@ def pre_process_iris(iris_data, std=False):
         row_vectors = pre.std_rows(row_vectors, [0, 1])
     return row_vectors, col_vectors
 
+
+def pre_process_data(data, row_start, row_end, rv1, rv2, target_col, tar_col_val, std=False):
+    '''
+    Our preprocess is based around the assumption that we want to test,
+    Is the highest rating of '8' in the wine data set a cut 
+    '''
+    row_vectors = pre.create_row_vectors(data, row_start, row_end, [rv1, rv2])
+    col_vectors = pre.create_col_vectors(data, row_start, row_end, target_col)
+    col_vectors = pre.mod_col_vals(col_vectors, tar_col_val, 1, -1)
+    # if standardize is ture returns standardized row_vectors
+    if std == True:
+        row_vectors = pre.std_rows(row_vectors, [0, 1])
+    return row_vectors, col_vectors
+
 def perceptron_model(row_vectors, col_vectors, eta, iterations):
     '''
     creates a perceptron model
@@ -174,8 +188,26 @@ def main():
     #preprocess of data
 
     if file_name == 'iris.csv':
-        row_vectors, col_vectors = pre_process_iris(raw_data, std_data_flag)
+        row_vectors, col_vectors= pre_process_data(data=raw_data, 
+                                                   row_start=0, 
+                                                   row_end=raw_data.shape[0],
+                                                   rv1=0, 
+                                                   rv2=2, 
+                                                   target_col=raw_data.shape[1]-1,
+                                                   tar_col_val='Iris-setosa', 
+                                                   std=std_data_flag)
 
+
+    if file_name == 'winequality-red.csv':
+        row_vectors, col_vectors = pre_process_data(data=raw_data,
+                                                    row_start=0,
+                                                    row_end=raw_data.shape[0],
+                                                    rv1=0,
+                                                    rv2=2,
+                                                    target_col=raw_data.shape[1]-1,
+                                                    tar_col_val=8,
+                                                    std=std_data_flag)
+                                  
     if algorithm == 'perceptron':
         #learn predict
         perceptron = perceptron_model(row_vectors, col_vectors, eta, iters)

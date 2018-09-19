@@ -34,16 +34,12 @@ class Perceptron(object):
         self.weights = generator.normal(loc=0.0, scale=.01, size=len(row_vectors[0])+1)
         for iter in range(self.iters):
             error = 0  # initializes error counter to be zero of iter
-            i = 0
             for row_vector, output_vector in zip(row_vectors, output_vectors):
                 #create a prediction using the weights and given row_vector
                 prediction = self.predict(row_vector)
                 error = error + np.where(output_vector == prediction, 0, 1)
                 self.weights[0] = self.weights[0] + self.eta * (output_vector - prediction)
                 self.weights[1:] = self.weights[1:] + self.eta * (output_vector - prediction) * row_vector
-                i = i+1
-                #if i>=51:
-                #    break
             self.errors_list.append(error)
             self.weights_list.append(self.weights)
         return self
