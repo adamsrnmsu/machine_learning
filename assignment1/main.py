@@ -60,77 +60,146 @@ def algorithm_handler(algorithm, algorithms):
         sys.exit()
     return algorithm
 
+def pre_process_iris(iris_data, std=False):
+    '''
+    preprocsses iris data set
+    :param: std - if true standardizes the row_vectors
+    returns row_vectors, col_vectors
+    '''
+    row_vectors = pre.create_row_vectors(iris_data, 0, 150, [0, 2])
+    col_vectors = pre.create_col_vectors(iris_data, 0, 150, 4)
+    col_vectors = pre.mod_col_vals(col_vectors, 'Iris-setosa', 1, -1)
+    # if standardize is ture returns standardized row_vectors
+    if std == True:
+        row_vectors = pre.std_rows(row_vectors, [0, 1])
+    return row_vectors, col_vectors
+
+def perceptron_model(row_vectors, col_vectors, eta, iterations):
+    '''
+    creates a perceptron model
+    '''
+    model = Perceptron(eta, iterations)
+    model.learn(row_vectors, col_vectors)
+    return model
+
+def adaline_model(row_vectors, col_vectors, eta, iterations):
+    '''
+    creates a adaline model
+    '''
+    model = Adaline(eta, iterations)
+    model.learn(row_vectors, col_vectors)
+    return model
+
+
+def sgd_model(row_vectors, col_vectors, eta, iterations):
+    '''
+    creates a sgd model
+    '''
+    model = SGD(eta, iterations)
+    model.learn(row_vectors, col_vectors)
+    return model
+
+
+def print_perceptron(model, row_vectors):
+    '''
+    printer helper function for perceptron
+    '''
+    for error in enumerate(model.errors_list, 0):
+        accuracy = pre.accuracy(
+            len(row_vectors) - error[1], len(row_vectors))
+        print("iter: " + str(error[0]) + " error: " +
+                str(error[1]) + " accuracy: " + str(accuracy))
+
+
+def print_adaline(model, row_vectors):
+    '''
+    printer helper function for adaline
+    '''
+    for cost in enumerate(model.costs, 0):
+        accuracy = pre.accuracy(
+            len(row_vectors) - model.errors_list[cost[0]], len(row_vectors))
+        print("iter: " + str(cost[0]) + " cost: " +
+                str(cost[1]) + " accuracy: " + str(accuracy))
+
+
+def print_sgd(model, row_vectors):
+    for cost in enumerate(model.avg_costs, 0):
+        accuracy = pre.accuracy(
+            len(row_vectors) - model.errors_list[cost[0]], len(row_vectors))
+        print("iter: " + str(cost[0]) + " cost: " +
+                str(cost[1]) + " accuracy: " + str(accuracy))
+
+
+def perceptron_plot_helper(perceptron):
+    '''
+    plot function for perceptron
+    '''
+    x_axis = list(range(0, len(perceptron.errors_list)))
+    plt.plot(x_axis, perceptron.errors_list)
+    plt.ylabel("Errors")
+    plt.xlabel("Iterations")
+    plt.show()
+
+
+def adaline_plot_helper(adaline):
+    '''
+    plot function for perceptron
+    '''
+    x_axis = list(range(0, len(adaline.errors_list)))
+    plt.plot(x_axis, adaline.costs)
+    plt.ylabel("Costs")
+    plt.xlabel("Iterations")
+    plt.show()
+
+def sgd_plot_helper(sgd):
+    x_axis = list(range(0, len(sgd.avg_costs)))
+    plt.plot(x_axis, sgd.avg_costs)
+    plt.ylabel("Avg_Costs")
+    plt.xlabel("Iterations")
+    plt.show()
+
+
 def main():
+    #take in command line arguments
+    #python3 main.py perceptron iris.csv .01 100 False False
     algorithms = ['perceptron', 'adaline','sgd']
     algorithm = algorithm_handler(sys.argv[1], algorithms)
     file_name = sys.argv[2]
     raw_data = file_handler(sys.argv[2])
-    try:
-        eta = float(sys.argv[3])
-    except IndexError:
-        print("eta value not passed in using default = .01")
-        eta = .01
-    try:
-        itrs = int(sys.argv[4])
-    except IndexError:
-        print("itr value not passed in using default = 10")
-        itrs = 10
+    eta = float(sys.argv[3])
+    iters = int(sys.argv[4])
+    std_data_flag = bool(sys.argv[5])
+    graph_data_flag = sys.argv[6]
 
-    if algorithm == 'perceptron' and file_name == 'iris.csv':
-        #preprocess
-        row_vectors = pre.create_row_vectors(raw_data, 0, 150, [0,2])
-        col_vectors = pre.create_col_vectors(raw_data, 0, 150, 4)
-        col_vectors = pre.mod_col_vals(col_vectors,'Iris-setosa', 1, -1)
+    #preprocess of data
+
+    if file_name == 'iris.csv':
+        row_vectors, col_vectors = pre_process_iris(raw_data, std_data_flag)
+
+    if algorithm == 'perceptron':
         #learn predict
-        model = Perceptron(eta, itrs)
-        model.learn(row_vectors, col_vectors)
-        #report
-        x_axis = []
-        for error in enumerate(model.errors_list,0):
-            accuracy = pre.accuracy(len(row_vectors) - error[1], len(row_vectors))
-            x_axis.append(error[0])
-            print("iter: " + str(error[0]) + " error: " + str(error[1]) + " accuracy: " + str(accuracy))
-        # #plot
-        # plt.plot(x_axis, model.errors_list)
-        # plt.ylabel("Errors")
-        # plt.xlabel("Iterations")
-        # plt.xlim([0, itrs+1])
-        # plt.ylim([0, max(model.errors_list)+1])
-        # plt.show()
-    elif algorithm == 'adaline' and file_name == 'iris.csv':
-        #preprocess
-        row_vectors = pre.create_row_vectors(raw_data, 0, 150, [0, 2])
-        std_row_vectors = pre.std_rows(row_vectors,[0,1])
-        col_vectors = pre.create_col_vectors(raw_data, 0, 150, 4)
-        col_vectors = pre.mod_col_vals(col_vectors, 'Iris-setosa', 1, -1)
-        #learn predict
-        model2 = Adaline(eta, itrs, )
-        model2.learn(std_row_vectors, col_vectors)
-        #report
-        x_axis = []
-        for cost in enumerate(model2.costs, 0):
-            accuracy = pre.accuracy(len(row_vectors) - model2.errors_list[cost[0]], len(row_vectors))
-            print("iter: " + str(cost[0]) + " cost: " + str(cost[1]) + " accuracy: " + str(accuracy))
-            x_axis.append(cost[0])
+        perceptron = perceptron_model(row_vectors, col_vectors, eta, iters)
+        #print results
+        print_perceptron(perceptron, row_vectors)
         #plot
-        plt.plot(x_axis, model2.costs)
-        plt.ylabel("Costs")
-        plt.xlabel("Iterations")
-        plt.xlim([0, itrs+1])
-        plt.ylim([0, max(model2.costs)+1])
-        plt.show()
-    elif algorithm == 'sgd' and file_name == 'iris.csv':
-        row_vectors = pre.create_row_vectors(raw_data, 0, 150, [0, 2])
-        std_row_vectors = pre.std_rows(row_vectors, [0, 1])
-        col_vectors = pre.create_col_vectors(raw_data, 0, 150, 4)
-        col_vectors = pre.mod_col_vals(col_vectors, 'Iris-setosa', 1, -1)
+        if graph_data_flag == 'True':
+            perceptron_plot_helper(perceptron)
+    elif algorithm == 'adaline':
         #learn predict
-        model3 = SGD(eta, itrs)
-        model3.learn(std_row_vectors, col_vectors)
-        for cost in enumerate(model3.avg_costs, 0):
-            print(cost)
-
-    #if algorithm == 'percptron':
+        adaline = adaline_model(row_vectors, col_vectors, eta, iters)
+        #print results
+        print_adaline(adaline, row_vectors)
+        #plot
+        if graph_data_flag == 'True':
+            adaline_plot_helper(adaline)
+    elif algorithm == 'sgd':
+        #learn predict
+        sgd = sgd_model(row_vectors, col_vectors, eta, iters)
+        #print result
+        print_sgd(sgd, row_vectors)
+        #plot
+        if graph_data_flag == 'True':
+            sgd_plot_helper(sgd)
 
 if __name__ == '__main__':
     main()

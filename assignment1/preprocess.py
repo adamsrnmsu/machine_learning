@@ -47,7 +47,6 @@ def accuracy(error, vec_len):
     return (error / vec_len) * 100
 
 
-
 def std_rows(row_vecs, col_list):
     '''
     takes row vectors and standardizes
@@ -58,5 +57,5 @@ def std_rows(row_vecs, col_list):
     '''
     std_row_vecs = np.copy(row_vecs)
     for col in col_list:
-        std_row_vecs[:, col] = (std_row_vecs[:, col] - std_row_vecs[:, col].mean()) / std_row_vecs[:, col].std()
+        std_row_vecs[:, col] = (row_vecs[:, col] - row_vecs[:, col].mean()) / row_vecs[:, col].std()
     return std_row_vecs

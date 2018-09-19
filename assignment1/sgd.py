@@ -35,7 +35,9 @@ class SGD(object):
         #initialize weigths function
         self.weights = generator.normal(loc=0.0, scale=.001, size=1 + row_vectors.shape[1])
         self.avg_costs = []
+        self.errors_list = []
         for iter in range(self.iters):
+            error = 0
             #shuffle step, creates permutted list of options
             row_vectors, output_vectors = self.shuffle(row_vectors, output_vectors)
             self.cost = []
@@ -43,6 +45,10 @@ class SGD(object):
                 self.cost.append(self.update_weights(row_vector, output_vector))
             avg_cost = sum(self.cost) / len(output_vectors)
             self.avg_costs.append(avg_cost)
+            for row_vector, output_vector in zip(row_vectors, output_vectors):
+                prediction = self.predict(row_vector)
+                error = error + np.where(output_vector == prediction, 0, 1)
+            self.errors_list.append(error)
         return self
             
 

@@ -44,6 +44,7 @@ class Adaline(object):
         self.costs = []
         self.errors_list =[]
         for iter in range(self.iters):
+            error = 0
             #create a prediction using the weights and given row_vector
             self.output = np.dot(row_vectors, self.weights[1:]) + self.weights[0]
             self.errors = (output_vectors - self.output)
