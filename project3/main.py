@@ -32,7 +32,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegression
 
-#todo 1. Support vecotor machines, second data set, argparse
+#Todo 1. Support vecotor machines, second data set, argparse
 
 
 def run_perceptron(x_dat_train, x_dat_test, y_targ_train, y_targ_test):
