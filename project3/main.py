@@ -31,8 +31,26 @@ from sklearn.linear_model import Perceptron
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegression
+from sklearn import svm
 
 #Todo 1. Support vecotor machines, second data set, argparse
+
+
+def run_linear_svm(x_dat_train, x_dat_test, y_targ_train, y_targ_test):
+    start = datetime.datetime.now()
+    lin_svm = svm.LinearSVC()
+    lin_svm.fit(x_dat_train, y_targ_train)
+    score = lin_svm.score(x_dat_test, y_targ_test)
+    end = datetime.datetime.now()
+    total_time = str(end - start)
+    times = total_time.split(':')
+    time = times[1] + ':' + times[2]
+    record_dict = {'name': 'linear_svm'}
+    record_dict['time'] = time
+    record_dict['accuracy'] = score
+    return record_dict
+
+    pass
 
 
 def run_perceptron(x_dat_train, x_dat_test, y_targ_train, y_targ_test):
@@ -138,6 +156,11 @@ def main():
 
     #logistic_regression
     record_dict = run_log_reg(
+        x_dat_train, x_dat_test, y_targ_train, y_targ_test)
+    report_list.append(record_dict)
+
+    # linear svm
+    linear_svm = run_linear_svm(
         x_dat_train, x_dat_test, y_targ_train, y_targ_test)
     report_list.append(record_dict)
 
