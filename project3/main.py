@@ -7,7 +7,9 @@ Usage of the following sklearn classifers on
 :Datasets: 
     i. Digits (Sklearn)
     'http://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_digits.html'
-    ii. Timeseries archive.ics.uci.edu
+    ii. Timeseries
+        Human Activity Recognition Using Smartphones Data Set:
+        'https://www.kaggle.com/mboaglio/simplifiedhuarus/home'
 
 :Classifiers: 
     i. Perceptron
@@ -148,6 +150,15 @@ def main():
     parser.add_argument("-L", "--load_digits", 
                         help="Loads data from digits library",
                         action="store_true")
+    parser.add_argument("-s", "--start",
+                        help="column number of where training data (x) starts",
+                        type=int)
+    parser.add_argument("-e", "--end",
+                        help="column number of where training data (x) ends",
+                        type=int)
+    parser.add_argument("-t", "--target",
+                        help="column number of the target",
+                        type=int)
     parser.add_argument("-f", "--load_from_file", 
                         help="specify path to data file", type=str)
     args = parser.parse_args()
@@ -163,42 +174,43 @@ def main():
         print(args.load_from_file)
         print(type(args.load_from_file))
         print(f_exists)
-        sys.exit()
-
+        if f_exists:
+            print('exists')
+            df = pd.read_csv(args.load_from_file)
+            if df.empty:
+                print("Got no data, exiting program")
+                sys.exit()
+            if not args.start:
+                print("You need to specify a start for your attribute training data")
+                sys.exit()
+            if not args.end:
+                print("You need to specify the end for your attribute training data")
+                # print("Remember that the slice is not inclusive of the first number")
+                # print("So if column two is the actual start")
+                sys.exit()
+            if not args.target:
+                print("You need to specify the target for classification")
+                sys.exit()
+            x_dat = df.iloc[:, args.start: args.end]
+            #x_dat = df.iloc[:, 1:562]
+            y_targ = df.iloc[:, args.target]
+            print(y_targ)
+            print(x_dat)
+        else:
+            print("the path you entered may be incorrect, could not locate file")
+            sys.exit()
 
     x_dat_train, x_dat_test, y_targ_train, y_targ_test = train_test_split(
         x_dat, y_targ, test_size=0.33, random_state=25)
 
-    report_list =[]
+    func_list = [run_perceptron, run_dec_tree, run_knn, run_log_reg, 
+                 run_linear_svm, run_rbf_svm]
 
-    #perceptron
-    record_dict = run_perceptron(
-        x_dat_train, x_dat_test, y_targ_train, y_targ_test)
-    report_list.append(record_dict)
-
-    #decesion tree
-    record_dict = run_dec_tree(
-        x_dat_train, x_dat_test, y_targ_train, y_targ_test)
-    report_list.append(record_dict)
-
-    #knn
-    record_dict = run_knn(
-        x_dat_train, x_dat_test, y_targ_train, y_targ_test)
-    report_list.append(record_dict)
-
-    #logistic_regression
-    record_dict = run_log_reg(
-        x_dat_train, x_dat_test, y_targ_train, y_targ_test)
-    report_list.append(record_dict)
-
-    # linear svm
-    record_dict = run_linear_svm(
-        x_dat_train, x_dat_test, y_targ_train, y_targ_test)
-    report_list.append(record_dict)
-
-    record_dict = run_rbf_svm(
-        x_dat_train, x_dat_test, y_targ_train, y_targ_test)
-    report_list.append(record_dict)
+    report_list = []
+    
+    for func in func_list:
+        record_dict = func(x_dat_train, x_dat_test, y_targ_train, y_targ_test)
+        report_list.append(record_dict)
 
     # reporting
     df = pd.DataFrame(report_list)
