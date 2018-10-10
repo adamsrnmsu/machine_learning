@@ -24,6 +24,9 @@ import pprint
 import matplotlib.pyplot as plt
 import datetime
 import time
+import argparse
+import os
+import sys
 
 from sklearn.datasets import load_digits
 from sklearn.model_selection import train_test_split
@@ -38,7 +41,7 @@ from sklearn import svm
 
 def run_linear_svm(x_dat_train, x_dat_test, y_targ_train, y_targ_test):
     start = datetime.datetime.now()
-    lin_svm = svm.LinearSVC()
+    lin_svm = svm.SVC(kernel='linear')
     lin_svm.fit(x_dat_train, y_targ_train)
     score = lin_svm.score(x_dat_test, y_targ_test)
     end = datetime.datetime.now()
@@ -50,7 +53,20 @@ def run_linear_svm(x_dat_train, x_dat_test, y_targ_train, y_targ_test):
     record_dict['accuracy'] = score
     return record_dict
 
-    pass
+
+def run_rbf_svm(x_dat_train, x_dat_test, y_targ_train, y_targ_test):
+    start = datetime.datetime.now()
+    lin_svm = svm.SVC(kernel='rbf')
+    lin_svm.fit(x_dat_train, y_targ_train)
+    score = lin_svm.score(x_dat_test, y_targ_test)
+    end = datetime.datetime.now()
+    total_time = str(end - start)
+    times = total_time.split(':')
+    time = times[1] + ':' + times[2]
+    record_dict = {'name': 'rbf_svm'}
+    record_dict['time'] = time
+    record_dict['accuracy'] = score
+    return record_dict
 
 
 def run_perceptron(x_dat_train, x_dat_test, y_targ_train, y_targ_test):
@@ -128,11 +144,27 @@ def main():
     '''
     main function
     '''
-    digits = load_digits()
-    #data that to be learned
-    x_dat = digits.data
-    #digit targets vector of number
-    y_targ = digits.target
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-L", "--load_digits", 
+                        help="Loads data from digits library",
+                        action="store_true")
+    parser.add_argument("-f", "--load_from_file", 
+                        help="specify path to data file", type=str)
+    args = parser.parse_args()
+    if args.load_digits:
+        digits = load_digits()
+        #data that to be learned
+        x_dat = digits.data
+        #digit targets vector of number
+        y_targ = digits.target
+
+    if args.load_from_file:
+        f_exists = os.path.isfile(args.load_from_file)
+        print(args.load_from_file)
+        print(type(args.load_from_file))
+        print(f_exists)
+        sys.exit()
+
 
     x_dat_train, x_dat_test, y_targ_train, y_targ_test = train_test_split(
         x_dat, y_targ, test_size=0.33, random_state=25)
@@ -160,7 +192,11 @@ def main():
     report_list.append(record_dict)
 
     # linear svm
-    linear_svm = run_linear_svm(
+    record_dict = run_linear_svm(
+        x_dat_train, x_dat_test, y_targ_train, y_targ_test)
+    report_list.append(record_dict)
+
+    record_dict = run_rbf_svm(
         x_dat_train, x_dat_test, y_targ_train, y_targ_test)
     report_list.append(record_dict)
 
