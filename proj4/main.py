@@ -36,6 +36,7 @@ import sys
 import warnings
 
 from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import RANSACRegressor
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, r2_score
 
@@ -58,6 +59,12 @@ def renew_to_df(renewable_data_path):
     return df
 
 def linear_reg_run(data_frame, x_col, y_col):
+    """
+    Linear regression on two columns from a data frame. 
+    :param data_frame: pandas data frame
+    :x_col: attribute column (guess column)
+    :y_col: attribute column (answer column) 
+    """
     x_vector = data_frame.iloc[:, x_col]
     y_vector = data_frame.iloc[:, y_col]
 
@@ -78,6 +85,25 @@ def linear_reg_run(data_frame, x_col, y_col):
     print("MSE: ", mse)
     print("R2: ", r2)
 
+def ransac_reg_run(data_frame, x_col, y_col):
+    x_vector = data_frame.iloc[:, x_col]
+    y_vector = data_frame.iloc[:, y_col]
+
+    x_vector = x_vector.values.reshape(-1, 1)
+    y_vector = y_vector.values.reshape(-1, 1)
+
+    reg_obj = RANSACRegressor().fit(x_vector, y_vector)
+    y_pred = reg_obj.predict(x_vector)
+    mse = mean_squared_error(y_vector, y_pred)
+    r2 = r2_score(y_vector, y_pred)
+
+    print("\n==============================================================")
+    print("RANSCAR Regression Results")
+    print("==============================================================")
+
+    print("MSE: ", mse)
+    print("R2: ", r2)
+
 
 def main():
     """
@@ -86,7 +112,8 @@ def main():
     h_df = housing_to_df('housing.data.txt')
     r_df = renew_to_df('all_breakdown.csv')
 
-    linear_reg_run(h_df,1,2)
+    linear_reg_run(h_df, 1, 2)
+    ransac_reg_run(h_df, 1, 2)
 
 if __name__ == '__main__':
     main()
