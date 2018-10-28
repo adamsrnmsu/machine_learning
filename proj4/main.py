@@ -61,15 +61,13 @@ def renew_to_df(renewable_data_path):
     df = pd.read_csv(renewable_data_path)
     return df
 
-def linear_reg_run(data_frame, x_col, y_col):
+def linear_reg_run(data_frame, x_vector, y_vector):
     """
     Linear regression on two columns from a data frame. 
     :param data_frame: pandas data frame
     :x_col: attribute column (guess column)
     :y_col: attribute column (answer column) 
     """
-    x_vector = data_frame.iloc[:, x_col]
-    y_vector = data_frame.iloc[:, y_col]
 
     x_vector = x_vector.values.reshape(-1,1)
     y_vector = y_vector.values.reshape(-1,1)
@@ -88,15 +86,13 @@ def linear_reg_run(data_frame, x_col, y_col):
     print("MSE: ", mse)
     print("R2: ", r2)
 
-def ransac_reg_run(data_frame, x_col, y_col):
+def ransac_reg_run(data_frame, x_vector, y_vector):
     """
     ransac regression on two columns from a data frame. 
     :param data_frame: pandas data frame
-    :x_col: attribute column (guess column)
-    :y_col: attribute column (answer column) 
+    :x_vector: attribute column (guess column)
+    :y_vector: attribute column (answer column) 
     """
-    x_vector = data_frame.iloc[:, x_col]
-    y_vector = data_frame.iloc[:, y_col]
 
     x_vector = x_vector.values.reshape(-1, 1)
     y_vector = y_vector.values.reshape(-1, 1)
@@ -114,15 +110,13 @@ def ransac_reg_run(data_frame, x_col, y_col):
     print("R2: ", r2)
 
 
-def ridge_reg_run(data_frame, x_col, y_col, alpha=1.0):
+def ridge_reg_run(data_frame, x_vector, y_vector, alpha=1.0):
     """
     ridge regression on two columns from a data frame.
     :param data_frame: pandas data frame
-    :x_col: attribute column (guess column)
-    :y_col: attribute column (answer column)
+    :x_vector: attribute column (guess column)
+    :y_vector: attribute column (answer column)
     """
-    x_vector = data_frame.iloc[:, x_col]
-    y_vector = data_frame.iloc[:, y_col]
 
     x_vector = x_vector.values.reshape(-1, 1)
     y_vector = y_vector.values.reshape(-1, 1)
@@ -140,15 +134,13 @@ def ridge_reg_run(data_frame, x_col, y_col, alpha=1.0):
     print("R2: ", r2)
 
 
-def lasso_reg_run(data_frame, x_col, y_col):
+def lasso_reg_run(data_frame, x_vector, y_vector):
     """
     Lasso regression on two columns from a data frame.
     :param data_frame: pandas data frame
-    :x_col: attribute column (guess column)
-    :y_col: attribute column (answer column)
+    :x_vector: attribute column (guess column)
+    :y_vector: attribute column (answer column)
     """
-    x_vector = data_frame.iloc[:, x_col]
-    y_vector = data_frame.iloc[:, y_col]
 
     x_vector = x_vector.values.reshape(-1, 1)
     y_vector = y_vector.values.reshape(-1, 1)
@@ -165,22 +157,18 @@ def lasso_reg_run(data_frame, x_col, y_col):
     print("MSE: ", mse)
     print("R2: ", r2)
 
-def normal_eq_params(data_frame, x_col, y_col):
+
+def normal_eq_params(data_frame, x_vector, y_vector):
     """
     normal equation implementation:
     Note I rely heavily on the implmentation examples found at
     https://www.c-sharpcorner.com/article/normal-equation-implementation-from-scratch-in-python/
     :param data_frame: pandas data frame
-    :x_col: attribute column (guess column)
-    :y_col: attribute column (answer column)
+    :x_vector: attribute column (guess column)
+    :y_vector: attribute column (answer column)
     """
     #normal equation 
     #params=(X.T *X)^-1 *X.T * y
-
-    #standard conversion from int column selector to pandas data series
-    x_vector = data_frame.iloc[:, x_col]
-    y_vector = data_frame.iloc[:, y_col]
-
     #reshape vectors for continutiy
     x_vector = x_vector.values.reshape(-1, 1)
     y_vector = y_vector.values.reshape(-1, 1)
@@ -205,33 +193,30 @@ def normal_eq_params(data_frame, x_col, y_col):
 
     return params
 
-def normal_eq_predict(data_frame, params, x_col):
+def normal_eq_predict(data_frame, params, x_vector):
     """
     Use pram from normal_eq_params to create a vector of predictions
     Note I rely heavily on the implmentation examples found at
     https://www.c-sharpcorner.com/article/normal-equation-implementation-from-scratch-in-python/
     :param data_frame: pandas data frame
     :params: result from normal_eq_params()
-    :x_col: attribute column (guess column)
+    :x_vector: attribute column (guess column)
     """
-    x_vector = data_frame.iloc[:, x_col]
     x_vector = x_vector.values.reshape(-1, 1)
-
     pred = x_vector.dot(params)
-
     return pred
 
-def normal_eq_score(data_frame, y_col, pred):
-    y_vector = data_frame.iloc[:, y_col]
+
+def normal_eq_score(data_frame, y_vector, pred):
     y_vector = y_vector.values.reshape(-1, 1)
     mse = mean_squared_error(y_vector, pred)
     r2 = r2_score(y_vector, pred)
     return mse, r2
 
-def run_normal_eq(data_frame, x_col, y_col):
-    params = normal_eq_params(data_frame, x_col, y_col)
-    pred = normal_eq_predict(data_frame, params, x_col)
-    mse, r2 = normal_eq_score(data_frame, y_col, pred)
+def run_normal_eq(data_frame, x_vector, y_vector):
+    params = normal_eq_params(data_frame, x_vector, y_vector)
+    pred = normal_eq_predict(data_frame, params, x_vector)
+    mse, r2 = normal_eq_score(data_frame, y_vector, pred)
 
     print("\n==============================================================")
     print("Normal Equation Results")
@@ -241,11 +226,13 @@ def run_normal_eq(data_frame, x_col, y_col):
     print("R2: ", r2)
 
 
-def run_nn_regressor(data_frame, x_col, y_col):
-    veclist = []
-    x_vector = data_frame.iloc[:, x_col]
-    y_vector = data_frame.iloc[:, y_col]
+def run_nn_regressor(data_frame, x_vector, y_vector):
+    print("\n==============================================================")
+    print("Neural MLP Regressor Results")
+    print("==============================================================")
 
+    veclist = []
+   
     x_vector = x_vector.values.reshape(-1, 1)
     y_vector = y_vector.values.reshape(-1, 1)
     
@@ -257,16 +244,12 @@ def run_nn_regressor(data_frame, x_col, y_col):
     for vec in veclist:
         vec = np.reshape(vec,(-1,1))
 
-    ml_regressor = MLPRegressor(random_state=0, max_iter = 10000)
+    ml_regressor = MLPRegressor(random_state=0, max_iter = 1000)
     ml_regressor.fit(Xtrain, Ytrain)
     pred = ml_regressor.predict(Xtest)
 
     mse = mean_squared_error(Ytest, pred)
     r2 = r2_score(Ytest, pred)
-
-    print("\n==============================================================")
-    print("Neural MLP Regressor Results")
-    print("==============================================================")
 
     print("MSE: ", mse)
     print("R2: ", r2)
@@ -294,8 +277,10 @@ def main():
             list_names = args.load_from_file.split(".")
             if any('housing' in x for x in list_names):
                 df = housing_to_df(args.load_from_file)
+                print("loaded file")
             elif any('all_breakdown' in x for x in list_names):
                 df = renew_to_df(args.load_from_file)
+                print("loaded file")
             else:
                 print("file not expected, is it housing or the all_breakdown.csv?")
                 print("exiting")
@@ -315,13 +300,32 @@ def main():
         else:
             print("the path you entered may be incorrect, could not locate file")
             sys.exit()
+
+    print("does x_column have nans?")
+    print(x_dat.isnull().any())
+    print("does x_column have nans?")
+    print(y_targ.isnull().any())
+
+    # regardless of answer we create a set of indexs of nulls 
+    # cat the two lists together
+    # take the set so that we have the index of the nans in both sets
+    # drop those rows
+    y_nulls = y_targ.isnull()
+    y_nulls = y_nulls[y_nulls].index
+    x_nulls = x_dat.isnull()
+    x_nulls = x_nulls[x_nulls].index
+    nulls = y_nulls.tolist() + x_nulls.tolist()
+
+    set_nulls = set(nulls)
+    y_prefilt = y_targ.drop(set_nulls)
+    x_prefilt = x_dat.drop(set_nulls)
     
-    linear_reg_run(df, args.start, args.target)
-    ransac_reg_run(df, args.start, args.target)
-    ridge_reg_run(df, args.start, args.target)
-    lasso_reg_run(df, args.start, args.target)
-    run_normal_eq(df, args.start, args.target)
-    run_nn_regressor(df, args.start, args.target)
+    linear_reg_run(df, x_prefilt, y_prefilt)
+    ransac_reg_run(df, x_prefilt, y_prefilt)
+    ridge_reg_run(df, x_prefilt, y_prefilt)
+    lasso_reg_run(df, x_prefilt, y_prefilt)
+    run_normal_eq(df, x_prefilt, y_prefilt)
+    run_nn_regressor(df, x_prefilt, y_prefilt)
 
 
 if __name__ == '__main__':
