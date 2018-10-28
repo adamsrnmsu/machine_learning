@@ -1,7 +1,7 @@
 """
 :Name: Ryan C. Adams
 :Course: CS487 Applied Machine Learning I
-:Project 4: Regressiongit 
+:Project 4: Regression 
 
 Usage of the following sklearn classifers on 
 
