@@ -2,3 +2,6 @@ assignment1/__pycache__
 assignment1/.ipynb_checkpoints/
 proj4/all_breakdown.csv
 proj4/housing.data.txt
+proj5/iris.csv
+proj5/faults.csv
+proj5/*.png
