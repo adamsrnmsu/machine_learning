@@ -129,14 +129,14 @@ def main():
     kernels = ["linear", "poly", "rbf", "sigmoid", "cosine"]
 
  
-    #run_plot_pca(dig_dat, dig_tar, components_digits, plot=False)
-    #run_plot_pca(iris_data, iris_target, components_iris, plot=False)
+    run_plot_pca(dig_dat, dig_tar, components_digits, plot=False)
+    run_plot_pca(iris_data, iris_target, components_iris, plot=False)
     
-    #run_plot_lda(dig_dat, dig_tar, components_digits, plot=False)
-    #run_plot_lda(iris_data, iris_target, components_iris, plot=True)
+    run_plot_lda(dig_dat, dig_tar, components_digits, plot=False)
+    run_plot_lda(iris_data, iris_target, components_iris, plot=False)
 
-    run_plot_kpca(dig_dat, dig_tar, components_digits, kernels, plot=True)
-    #run_plot_kpca(iris_data, iris_target, components_iris, kernels, plot=False)
+    run_plot_kpca(dig_dat, dig_tar, components_digits, kernels, plot=False)
+    run_plot_kpca(iris_data, iris_target, components_iris, kernels, plot=False)
     
  
 if __name__ == '__main__':
