@@ -77,7 +77,10 @@ def run_plot_lda(X_dat, Y_target, components, plot=False):
 
 def run_plot_kpca(X_dat, Y_target, components, kernels, plot=False):
     plot_dict = {}
-    for kernel in kernels:   
+    for kernel in kernels:
+        val_list = []
+        comp_list = []
+        val_comp = []
         for component in components:
             kpca = KernelPCA(n_components=component, kernel=kernel)
             kpca_fit = kpca.fit(X_dat)
@@ -85,16 +88,24 @@ def run_plot_kpca(X_dat, Y_target, components, kernels, plot=False):
             clf = LogisticRegression(
                 random_state=0, solver='lbfgs', multi_class='multinomial').fit(X_dat_transform, Y_target)
             score = clf.score(X_dat_transform, Y_target)
-            cat_ker_n = str(kernel)+ str(component)
-            plot_dict[cat_ker_n] = score * 100
+            #cat_ker_n = str(kernel)+ str(component)
+            score = score *100
+            val_list.append(score)
+            comp_list.append(component)
+        val_comp.append(comp_list)
+        val_comp.append(val_list)
+        plot_dict[kernel] = val_comp
+            #plot_dict[kernel] = score * 100
     pprint.pprint(plot_dict) 
     
     if plot == True:
-        plt.figure()
-        plt.plot(list(plot_dict.keys()), list(plot_dict.values()))
-        plt.xlabel("Number of Components")
-        plt.ylabel("Accuracy %")
-        plt.show()
+        for kernel in plot_dict.keys():
+            plt.figure()
+            plt.title("Kernel PCA: " + str(kernel))
+            plt.plot(plot_dict[kernel][0], plot_dict[kernel][1])
+            plt.xlabel("Number of Components")
+            plt.ylabel("Accuracy %")
+            plt.show()
 
 def main():
     #read in iris
@@ -118,14 +129,14 @@ def main():
     kernels = ["linear", "poly", "rbf", "sigmoid", "cosine"]
 
  
-    run_plot_pca(dig_dat, dig_tar, components_digits, plot=False)
-    run_plot_pca(iris_data, iris_target, components_iris, plot=False)
+    #run_plot_pca(dig_dat, dig_tar, components_digits, plot=False)
+    #run_plot_pca(iris_data, iris_target, components_iris, plot=False)
     
-    run_plot_lda(dig_dat, dig_tar, components_digits, plot=False)
-    run_plot_lda(iris_data, iris_target, components_iris, plot=False)
+    #run_plot_lda(dig_dat, dig_tar, components_digits, plot=False)
+    #run_plot_lda(iris_data, iris_target, components_iris, plot=True)
 
-    run_plot_kpca(dig_dat, dig_tar, components_digits, kernels, plot=False)
-    run_plot_kpca(iris_data, iris_target, components_iris, kernels, plot=False)
+    run_plot_kpca(dig_dat, dig_tar, components_digits, kernels, plot=True)
+    #run_plot_kpca(iris_data, iris_target, components_iris, kernels, plot=False)
     
  
 if __name__ == '__main__':

@@ -153,7 +153,7 @@ def main():
     #run algorithms
 
     runplot_kmeans(df_iris, col_1=1, col_2=2, run_list=one_to_10, plot=False)
-    runplot_kmeans(df_plates, col_1=5, col_2=6, run_list=one_to_10, plot=True)
+    runplot_kmeans(df_plates, col_1=5, col_2=6, run_list=one_to_10, plot=False)
 
     runplot_aggolm_sp(iris_aglom_df, plot=False)
     runplot_aggolm_sp(df_plates,plot=False)
