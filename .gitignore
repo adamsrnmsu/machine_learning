@@ -7,3 +7,7 @@ proj5/faults.csv
 proj5/*.png
 proj6/iris.csv
 proj6/*.png
+proj7/t10k-images-idx3-ubyte
+proj7/t10k-labels-idx1-ubyte
+proj7/train-images-idx3-ubyte
+proj7/train-labels-idx1-ubyte
